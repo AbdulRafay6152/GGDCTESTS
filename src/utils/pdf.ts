@@ -111,6 +111,7 @@ export function generatePDFReport(test: Test, attempt: Attempt): void {
   if (attempt.takerFatherName) { doc.text(`Father's Name: ${attempt.takerFatherName}`, 14, y); y += 5; }
   doc.text(`Email: ${attempt.takerEmail}`, 14, y); y += 5;
   if (attempt.takerStudentId) { doc.text(`Student ID: ${attempt.takerStudentId}`, 14, y); y += 5; }
+  if (attempt.takerIP) { doc.text(`Device/IP: ${attempt.takerIP}`, 14, y); y += 5; }
   doc.text(`Attempt: #${attempt.attemptNumber}`, 14, y); y += 5;
   doc.text(`Submitted: ${attempt.submittedAt ? format(new Date(attempt.submittedAt), 'MMM d, yyyy h:mm a') : '—'}`, 14, y); y += 5;
   if (attempt.timeTakenSeconds) {

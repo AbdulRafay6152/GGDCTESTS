@@ -248,6 +248,11 @@ export default function Results() {
                     <div className="text-xs text-mono break-all" style={{ color: 'var(--text-muted)' }}>
                       {attempt.takerEmail}{attempt.takerStudentId && ` · ${attempt.takerStudentId}`}
                     </div>
+                    {attempt.takerIP && (
+                      <div className="text-xs text-mono" style={{ color: 'var(--text-muted)' }}>
+                        IP: {attempt.takerIP} · #{attempt.attemptNumber}
+                      </div>
+                    )}
                   </td>
                   <td className="px-3 py-3 whitespace-nowrap">
                     <span className="text-xs sm:text-sm font-semibold" style={{ color: (attempt.percentage || 0) >= 50 ? 'var(--success)' : 'var(--error)' }}>

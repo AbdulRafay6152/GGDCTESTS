@@ -107,6 +107,7 @@ export interface Attempt {
   takerFatherName: string;
   takerEmail: string;
   takerStudentId: string;
+  takerIP: string;
   answers: Answer[];
   score: number | null;
   maxScore: number;

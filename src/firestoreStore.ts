@@ -390,7 +390,8 @@ export async function createAttempt(
   takerName: string,
   takerFatherName: string,
   takerEmail: string,
-  takerStudentId: string
+  takerStudentId: string,
+  takerIP: string
 ): Promise<Attempt> {
   try {
     // Count existing attempts for this test+email+studentId
@@ -412,6 +413,7 @@ export async function createAttempt(
       takerFatherName,
       takerEmail,
       takerStudentId,
+      takerIP,
       attemptNumber,
       answers: [],
       score: null,
@@ -451,6 +453,65 @@ export async function getAttempt(id: string): Promise<Attempt | null> {
   } catch (error) {
     console.error('Error getting attempt:', error);
     return null;
+  }
+}
+
+/**
+ * Get attempts by IP address for a specific test
+ * Used to enforce IP-based attempt limits
+ */
+export async function getAttemptsByIP(testId: string, ip: string): Promise<Attempt[]> {
+  try {
+    const q = query(
+      collection(db, 'attempts'),
+      where('testId', '==', testId),
+      where('takerIP', '==', ip)
+    );
+    
+    const querySnapshot = await getDocs(q);
+    
+    return querySnapshot.docs.map(doc => ({
+      id: doc.id,
+      ...doc.data()
+    } as Attempt));
+  } catch (error) {
+    console.error('Error getting attempts by IP:', error);
+    return [];
+  }
+}
+
+/**
+ * Check if a user can take a test based on IP and attempt limits
+ * Returns: { allowed: boolean, message?: string, currentAttempts: number }
+ */
+export async function checkAttemptLimit(
+  testId: string, 
+  ip: string, 
+  attemptLimit: number | null
+): Promise<{ allowed: boolean; message?: string; currentAttempts: number }> {
+  // If no limit is set, always allow
+  if (attemptLimit === null) {
+    return { allowed: true, currentAttempts: 0 };
+  }
+
+  try {
+    const ipAttempts = await getAttemptsByIP(testId, ip);
+    const submittedAttempts = ipAttempts.filter(a => a.status === 'submitted');
+    const currentAttempts = submittedAttempts.length;
+
+    if (currentAttempts >= attemptLimit) {
+      return {
+        allowed: false,
+        message: `You have already used all ${attemptLimit} allowed attempt${attemptLimit !== 1 ? 's' : ''} from this device.`,
+        currentAttempts
+      };
+    }
+
+    return { allowed: true, currentAttempts };
+  } catch (error) {
+    console.error('Error checking attempt limit:', error);
+    // If we can't check, allow but log the error
+    return { allowed: true, currentAttempts: 0 };
   }
 }
 

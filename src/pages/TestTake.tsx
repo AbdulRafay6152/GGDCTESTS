@@ -1,9 +1,10 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useParams } from 'react-router-dom';
-import { getTestBySlug, createAttempt, updateAttempt, submitAttempt } from '../firestoreStore';
+import { getTestBySlug, createAttempt, updateAttempt, submitAttempt, checkAttemptLimit } from '../firestoreStore';
 import { Test, Question, Attempt, Answer, AntiCheatEvent } from '../types';
 import { Clock, Flag, ChevronLeft, ChevronRight, AlertTriangle, Lock } from 'lucide-react';
 import katex from 'katex';
+import { detectIP } from '../utils/ip';
 
 function generateId(): string {
   return Date.now().toString(36) + Math.random().toString(36).substr(2, 6);
@@ -40,12 +41,28 @@ export default function TestTake() {
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const [timeLeft, setTimeLeft] = useState<number | null>(null);
   const [shuffledQuestions, setShuffledQuestions] = useState<Question[]>([]);
+  const [userIP, setUserIP] = useState<string>('');
+  const [ipBlocked, setIpBlocked] = useState<string | null>(null);
 
   useEffect(() => {
     async function loadTest() {
       if (slug) {
         const t = await getTestBySlug(slug);
         setTest(t);
+        
+        // Detect IP early and check attempt limits
+        if (t) {
+          const ip = await detectIP();
+          setUserIP(ip);
+          
+          // Check if this IP has exceeded attempt limits
+          if (t.settings.attemptLimit !== null) {
+            const limitCheck = await checkAttemptLimit(t.id, ip, t.settings.attemptLimit);
+            if (!limitCheck.allowed) {
+              setIpBlocked(limitCheck.message || null);
+            }
+          }
+        }
       }
       setLoading(false);
     }
@@ -143,6 +160,33 @@ export default function TestTake() {
     );
   }
 
+  // IP-based attempt limit block
+  if (ipBlocked) {
+    return (
+      <div className="min-h-screen flex items-center justify-center px-4" style={{ backgroundColor: 'var(--bg)' }}>
+        <div className="text-center p-6 max-w-sm">
+          <div className="w-12 h-12 rounded-full mx-auto mb-3 flex items-center justify-center" style={{ backgroundColor: 'var(--error)' + '20' }}>
+            <Lock size={20} style={{ color: 'var(--error)' }} />
+          </div>
+          <h1 className="text-base font-bold mb-2" style={{ fontFamily: 'var(--font-heading)', color: 'var(--text)' }}>
+            Attempt Limit Reached
+          </h1>
+          <p className="text-xs mb-3" style={{ color: 'var(--text-secondary)' }}>
+            {ipBlocked}
+          </p>
+          {userIP && (
+            <p className="text-xs mb-4" style={{ color: 'var(--text-muted)' }}>
+              Device ID: {userIP}
+            </p>
+          )}
+          <p className="text-xs" style={{ color: 'var(--text-muted)' }}>
+            Please contact your instructor if you believe this is an error.
+          </p>
+        </div>
+      </div>
+    );
+  }
+
   const now = new Date();
   if (test.settings.startDate && new Date(test.settings.startDate) > now) {
     return (
@@ -186,6 +230,7 @@ export default function TestTake() {
             <div>{test.questions.length} questions · {test.questions.reduce((s: number, q: Question) => s + q.points, 0)} points</div>
             {test.settings.timeLimitMinutes && <div>Time limit: {test.settings.timeLimitMinutes} min</div>}
             {test.settings.attemptLimit && <div>Attempts allowed: {test.settings.attemptLimit}</div>}
+            {userIP && <div className="text-mono mt-1" style={{ color: 'var(--text-muted)' }}>Device: {userIP}</div>}
           </div>
 
           {gateError && (
@@ -311,7 +356,17 @@ export default function TestTake() {
               if (!takerName.trim()) { setGateError('Full name is required.'); return; }
               if (!takerFatherName.trim()) { setGateError("Father's name is required."); return; }
 
-              const newAttempt = await createAttempt(test.id, takerName, takerFatherName, takerEmail, takerStudentId);
+              // Detect IP address
+              const ip = await detectIP();
+
+              // Check IP-based attempt limit
+              const limitCheck = await checkAttemptLimit(test.id, ip, test.settings.attemptLimit);
+              if (!limitCheck.allowed) {
+                setGateError(limitCheck.message || 'Attempt limit reached from this device.');
+                return;
+              }
+
+              const newAttempt = await createAttempt(test.id, takerName, takerFatherName, takerEmail, takerStudentId, ip);
               setAttempt(newAttempt);
               
               // Shuffle questions and options ONCE when test starts
