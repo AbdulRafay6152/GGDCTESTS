@@ -1,5 +1,5 @@
 // ============================================================
-// GGDC Tests — Attempts Routes (Test Taking)
+// Superior Tests — Attempts Routes (Test Taking)
 // ============================================================
 
 import { Router, Request, Response } from 'express';

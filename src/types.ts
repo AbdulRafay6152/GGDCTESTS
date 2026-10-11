@@ -1,5 +1,5 @@
 // ============================================================
-// GGDC Tests — Type Definitions
+// Superior Tests — Type Definitions
 // ============================================================
 
 export type QuestionType =
