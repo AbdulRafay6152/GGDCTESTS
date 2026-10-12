@@ -1,5 +1,5 @@
 // ============================================================
-// Superior Tests — Email Utility (Nodemailer)
+// GGDC — Government Girls Degree College — Email Utility (Nodemailer)
 // ============================================================
 
 import nodemailer from 'nodemailer';

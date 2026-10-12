@@ -1,5 +1,5 @@
 // ============================================================
-// Superior Tests — IP Detection Utility
+// GGDC — Government Girls Degree College — IP Detection Utility
 // ============================================================
 
 /**

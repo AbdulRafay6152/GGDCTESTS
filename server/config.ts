@@ -1,5 +1,5 @@
 // ============================================================
-// SuperiorTests — Backend Configuration
+// GGDC — Government Girls Degree College — Backend Configuration
 // ============================================================
 
 import dotenv from 'dotenv';
@@ -23,7 +23,7 @@ export const config = {
   smtpPort: parseInt(process.env.SMTP_PORT || '587', 10),
   smtpUser: process.env.SMTP_USER || '',
   smtpPass: process.env.SMTP_PASS || '',
-  smtpFrom: process.env.SMTP_FROM || 'Superior Tests <noreply@superiortests.com>',
+  smtpFrom: process.env.SMTP_FROM || 'GGDC <noreply@ggdctests.com>',
 
   // App
   appUrl: process.env.APP_URL || 'http://localhost:5173',

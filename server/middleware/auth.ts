@@ -1,5 +1,5 @@
 // ============================================================
-// Superior Tests — Authentication Middleware
+// GGDC — Government Girls Degree College — Authentication Middleware
 // ============================================================
 
 import { Request, Response, NextFunction } from 'express';

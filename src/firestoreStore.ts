@@ -217,7 +217,7 @@ export async function createTest(name: string): Promise<Test> {
       preventRefresh: false,
       resumeControl: false
     },
-    notifyOnSubmit: false
+    scheduledResultDate: null
   };
   
   const testData: Omit<Test, 'id'> = {

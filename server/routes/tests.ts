@@ -1,5 +1,5 @@
 // ============================================================
-// Superior Tests — Tests Routes
+// GGDC — Government Girls Degree College — Tests Routes
 // ============================================================
 
 import { Router, Response } from 'express';

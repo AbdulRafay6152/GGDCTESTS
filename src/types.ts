@@ -1,5 +1,5 @@
 // ============================================================
-// Superior Tests — Type Definitions
+// GGDC — Government Girls Degree College — Type Definitions
 // ============================================================
 
 export type QuestionType =
@@ -70,7 +70,8 @@ export interface TestSettings {
     preventRefresh: boolean;
     resumeControl: boolean;
   };
-  notifyOnSubmit: boolean;
+  // Scheduled results (optional - only used when showResults is false)
+  scheduledResultDate: string | null;
 }
 
 export interface Test {

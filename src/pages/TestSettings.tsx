@@ -14,7 +14,7 @@ function getDefaultSettings(): TestSettingsType {
     onePerPage: false, shuffleQuestions: false, shuffleOptions: false,
     antiCheat: { tabSwitchDetection: false, fullscreenEnforcement: false, disableCopyPaste: false,
       disableRightClick: false, disableTextSelection: false, watermark: false, preventRefresh: false, resumeControl: false },
-    notifyOnSubmit: false,
+    scheduledResultDate: null,
   };
 }
 
@@ -240,6 +240,19 @@ export default function TestSettingsPage() {
 
         <Section title="Display & Scoring">
           <Toggle label="Show results immediately after submission" checked={settings.showResults} onChange={v => update({ showResults: v })} />
+          {!settings.showResults && (
+            <Field label="Schedule results release (optional)">
+              <input 
+                type="datetime-local" 
+                value={settings.scheduledResultDate || ''} 
+                onChange={e => update({ scheduledResultDate: e.target.value || null })}
+                className="w-full px-2.5 py-1.5 rounded border text-xs outline-none"
+                style={{ backgroundColor: 'var(--surface)', borderColor: 'var(--border)', color: 'var(--text)' }} />
+              <p className="text-xs mt-1" style={{ color: 'var(--text-muted)' }}>
+                Students will see their results only after this date/time. Leave blank to manually release results later.
+              </p>
+            </Field>
+          )}
           <Toggle label="Show correct answers and explanations after submission" checked={settings.showCorrectAnswers} onChange={v => update({ showCorrectAnswers: v })} />
           <Toggle label="Enable negative marking" checked={settings.negativeMarking} onChange={v => update({ negativeMarking: v })} />
           {settings.negativeMarking && (
@@ -265,10 +278,6 @@ export default function TestSettingsPage() {
           <Toggle label="Watermark overlay with taker's name" checked={settings.antiCheat.watermark} onChange={v => updateAC({ watermark: v })} />
           <Toggle label="Prevent page refresh during attempt" checked={settings.antiCheat.preventRefresh} onChange={v => updateAC({ preventRefresh: v })} />
           <Toggle label="Resume control (paused attempts require owner approval)" checked={settings.antiCheat.resumeControl} onChange={v => updateAC({ resumeControl: v })} />
-        </Section>
-
-        <Section title="Notifications">
-          <Toggle label="Email me when a new result is submitted" checked={settings.notifyOnSubmit} onChange={v => update({ notifyOnSubmit: v })} />
         </Section>
 
         <div className="flex gap-3 pt-4 border-t" style={{ borderColor: 'var(--border)' }}>

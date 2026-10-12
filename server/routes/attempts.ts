@@ -1,5 +1,5 @@
 // ============================================================
-// Superior Tests — Attempts Routes (Test Taking)
+// GGDC — Government Girls Degree College — Attempts Routes (Test Taking)
 // ============================================================
 
 import { Router, Request, Response } from 'express';
