@@ -405,10 +405,24 @@ function removeUndefined(obj: any): any {
 
 export async function updateTest(test: Test): Promise<void> {
   try {
+    // Get current test to check if name changed
+    const currentTestDoc = await getDoc(doc(db, 'tests', test.id));
+    const currentTest = currentTestDoc.data() as Test;
+    
     const { id, ...testData } = test;
     const cleanedData = removeUndefined(testData);
+    
+    // If test name changed, regenerate slug
+    let slugUpdate = {};
+    if (currentTest && currentTest.settings.name !== test.settings.name) {
+      const newSlug = generateSlug(test.settings.name);
+      slugUpdate = { slug: newSlug };
+      testData.slug = newSlug;
+    }
+    
     await updateDoc(doc(db, 'tests', id), {
       ...cleanedData,
+      ...slugUpdate,
       updatedAt: new Date().toISOString()
     });
   } catch (error) {

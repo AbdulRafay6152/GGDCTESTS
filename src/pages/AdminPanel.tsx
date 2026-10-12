@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { createUser } from '../firestoreStore';
 import { useAuth } from '../AuthContext';
-import { UserPlus, ArrowLeft, Users } from 'lucide-react';
+import { UserPlus, ArrowLeft, Users, X, Copy, Check, CheckCircle } from 'lucide-react';
 
 export default function AdminPanel() {
   const navigate = useNavigate();
@@ -13,6 +13,9 @@ export default function AdminPanel() {
   const [confirmPassword, setConfirmPassword] = useState('');
   const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
   const [loading, setLoading] = useState(false);
+  const [showCredentials, setShowCredentials] = useState(false);
+  const [createdUser, setCreatedUser] = useState<{ email: string; name: string; password: string } | null>(null);
+  const [copied, setCopied] = useState(false);
 
   // Only admin can access this page
   useEffect(() => {
@@ -46,7 +49,9 @@ export default function AdminPanel() {
       const result = await createUser(email, name, password);
       
       if (result.success) {
-        setMessage({ type: 'success', text: `Account created successfully for ${name}!` });
+        // Show credentials popup
+        setCreatedUser({ email, name, password });
+        setShowCredentials(true);
         // Clear form
         setEmail('');
         setName('');
@@ -59,6 +64,15 @@ export default function AdminPanel() {
       setMessage({ type: 'error', text: error.message || 'Failed to create account.' });
     } finally {
       setLoading(false);
+    }
+  };
+
+  const copyCredentials = () => {
+    if (createdUser) {
+      const text = `Account Created Successfully!\n\nName: ${createdUser.name}\nEmail: ${createdUser.email}\nPassword: ${createdUser.password}\n\nLogin at: ${window.location.origin}/login`;
+      navigator.clipboard.writeText(text);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
     }
   };
 
@@ -233,6 +247,90 @@ export default function AdminPanel() {
           </ul>
         </div>
       </main>
+
+      {/* Credentials Modal */}
+      {showCredentials && createdUser && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4" style={{ backgroundColor: 'rgba(0, 0, 0, 0.5)' }}>
+          <div className="w-full max-w-md rounded border shadow-lg" style={{ backgroundColor: 'var(--surface)', borderColor: 'var(--border)' }}>
+            {/* Modal Header */}
+            <div className="flex items-center justify-between p-4 border-b" style={{ borderColor: 'var(--border)' }}>
+              <div className="flex items-center gap-2">
+                <CheckCircle size={20} style={{ color: 'var(--success)' }} />
+                <h2 className="text-sm font-semibold" style={{ color: 'var(--text)' }}>
+                  Account Created Successfully!
+                </h2>
+              </div>
+              <button
+                onClick={() => setShowCredentials(false)}
+                className="p-1 rounded border-none cursor-pointer"
+                style={{ backgroundColor: 'transparent', color: 'var(--text-muted)' }}
+              >
+                <X size={18} />
+              </button>
+            </div>
+
+            {/* Modal Content */}
+            <div className="p-4">
+              <p className="text-xs mb-4" style={{ color: 'var(--text-secondary)' }}>
+                Share these credentials with the user via WhatsApp or any secure method:
+              </p>
+
+              <div className="space-y-3 mb-4">
+                <div className="p-3 rounded" style={{ backgroundColor: 'var(--bg-secondary)' }}>
+                  <label className="text-xs font-medium block mb-1" style={{ color: 'var(--text-muted)' }}>
+                    Name
+                  </label>
+                  <p className="text-sm font-mono" style={{ color: 'var(--text)' }}>
+                    {createdUser.name}
+                  </p>
+                </div>
+
+                <div className="p-3 rounded" style={{ backgroundColor: 'var(--bg-secondary)' }}>
+                  <label className="text-xs font-medium block mb-1" style={{ color: 'var(--text-muted)' }}>
+                    Email
+                  </label>
+                  <p className="text-sm font-mono" style={{ color: 'var(--text)' }}>
+                    {createdUser.email}
+                  </p>
+                </div>
+
+                <div className="p-3 rounded" style={{ backgroundColor: 'var(--bg-secondary)' }}>
+                  <label className="text-xs font-medium block mb-1" style={{ color: 'var(--text-muted)' }}>
+                    Password
+                  </label>
+                  <p className="text-sm font-mono" style={{ color: 'var(--text)' }}>
+                    {createdUser.password}
+                  </p>
+                </div>
+              </div>
+
+              <button
+                onClick={copyCredentials}
+                className="w-full py-2 rounded text-xs font-semibold border-none cursor-pointer flex items-center justify-center gap-2"
+                style={{ backgroundColor: 'var(--primary)', color: '#fff' }}
+              >
+                {copied ? <Check size={14} /> : <Copy size={14} />}
+                {copied ? 'Copied!' : 'Copy All Credentials'}
+              </button>
+
+              <p className="text-xs mt-3 text-center" style={{ color: 'var(--text-muted)' }}>
+                Login URL: {window.location.origin}/login
+              </p>
+            </div>
+
+            {/* Modal Footer */}
+            <div className="p-4 border-t" style={{ borderColor: 'var(--border)' }}>
+              <button
+                onClick={() => setShowCredentials(false)}
+                className="w-full py-2 rounded text-xs font-medium border cursor-pointer"
+                style={{ borderColor: 'var(--border)', backgroundColor: 'var(--surface)', color: 'var(--text)' }}
+              >
+                Close
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

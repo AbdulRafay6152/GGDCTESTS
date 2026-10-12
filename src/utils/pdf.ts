@@ -238,45 +238,69 @@ export function generatePDFReport(test: Test, attempt: Attempt): void {
     const answer = attempt.answers.find(a => a.questionId === q.id);
     const isCorrect = checkCorrectness(q, answer);
 
-    if (y > 265) {
+    if (y > 250) {
       doc.addPage();
       y = 20;
     }
 
-    // Question header
+    // Question header with status
     doc.setFont('helvetica', 'bold');
     doc.setFontSize(9);
-    doc.setTextColor(...TEXT);
     const statusIcon = isCorrect === true ? '✓' : isCorrect === false ? '✗' : '—';
     const statusColor = isCorrect === true ? [5, 150, 105] : isCorrect === false ? [220, 38, 38] : [136, 136, 136];
     doc.setTextColor(...statusColor as [number, number, number]);
     doc.text(statusIcon, 14, y);
     doc.setTextColor(...TEXT);
     doc.text(`Q${i + 1} (${q.points} pts)`, 20, y);
-    y += 4;
+    y += 5;
 
-    // Question text (truncated and converted from LaTeX)
+    // Question text (converted from LaTeX)
     doc.setFont('helvetica', 'normal');
     doc.setFontSize(8);
-    doc.setTextColor(...TEXT_SECONDARY);
+    doc.setTextColor(...TEXT);
     const qTextPlain = latexToPlainText(q.text);
-    const qText = qTextPlain.length > 100 ? qTextPlain.substring(0, 100) + '...' : qTextPlain;
-    const splitQ = doc.splitTextToSize(qText, 170);
+    const splitQ = doc.splitTextToSize(qTextPlain, 170);
     doc.text(splitQ, 20, y);
-    y += splitQ.length * 3.5 + 1;
+    y += splitQ.length * 3.5 + 2;
 
-    // Answer
+    // User's answer with color coding
     doc.setFontSize(8);
-    doc.setTextColor(...TEXT_SECONDARY);
-    doc.text(`Answer: ${formatAnswer(answer?.answer)}`, 24, y); y += 3.5;
-    doc.setTextColor(5, 150, 105);
-    doc.text(`Correct: ${getCorrectAnswer(q)}`, 24, y); y += 5;
+    const userAnswer = formatAnswer(answer?.answer);
+    if (isCorrect === false) {
+      doc.setTextColor(220, 38, 38); // Red for wrong
+      doc.text(`Your Answer: ${userAnswer}`, 24, y);
+    } else if (isCorrect === true) {
+      doc.setTextColor(5, 150, 105); // Green for correct
+      doc.text(`Your Answer: ${userAnswer}`, 24, y);
+    } else {
+      doc.setTextColor(...TEXT_SECONDARY);
+      doc.text(`Your Answer: ${userAnswer}`, 24, y);
+    }
+    y += 4;
+
+    // Correct answer (show if wrong or for reference)
+    if (isCorrect === false || isCorrect === null) {
+      doc.setTextColor(5, 150, 105); // Green for correct answer
+      doc.text(`Correct Answer: ${getCorrectAnswer(q)}`, 24, y);
+      y += 4;
+    }
+
+    // Explanation if available
+    if (q.explanation) {
+      doc.setFont('helvetica', 'italic');
+      doc.setFontSize(7);
+      doc.setTextColor(...TEXT_SECONDARY);
+      const explanationText = latexToPlainText(q.explanation);
+      const splitExp = doc.splitTextToSize(`Explanation: ${explanationText}`, 165);
+      doc.text(splitExp, 24, y);
+      y += splitExp.length * 3 + 2;
+    }
 
     // Separator
     doc.setDrawColor(...BORDER);
     doc.setLineWidth(0.2);
     doc.line(14, y, 196, y);
-    y += 4;
+    y += 5;
   }
 
   // Footer
