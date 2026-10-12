@@ -353,8 +353,31 @@ export default function TestTake() {
           <button
             onClick={async () => {
               setGateError('');
-              if (!takerName.trim()) { setGateError('Full name is required.'); return; }
-              if (!takerFatherName.trim()) { setGateError("Father's name is required."); return; }
+              
+              // Validate name
+              if (!takerName.trim()) { 
+                setGateError('Full name is required.'); 
+                return; 
+              }
+              
+              // Name validation: minimum 3 characters, only letters and spaces
+              const nameRegex = /^[a-zA-Z\s]{3,50}$/;
+              if (!nameRegex.test(takerName.trim())) {
+                setGateError('Please enter a valid name (3-50 characters, letters only).');
+                return;
+              }
+              
+              // Validate father's name
+              if (!takerFatherName.trim()) { 
+                setGateError("Father's name is required."); 
+                return; 
+              }
+              
+              // Father's name validation: minimum 3 characters, only letters and spaces
+              if (!nameRegex.test(takerFatherName.trim())) {
+                setGateError("Please enter a valid father's name (3-50 characters, letters only).");
+                return;
+              }
 
               // Detect IP address
               const ip = await detectIP();

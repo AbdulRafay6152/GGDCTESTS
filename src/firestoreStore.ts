@@ -485,16 +485,15 @@ export async function createAttempt(
   takerIP: string
 ): Promise<Attempt> {
   try {
-    // Count existing attempts for this test+email+studentId
-    const q = query(
+    // Count existing attempts for this test+IP (device-based tracking)
+    const ipAttemptsQuery = query(
       collection(db, 'attempts'),
       where('testId', '==', testId),
-      where('takerEmail', '==', takerEmail),
-      where('takerStudentId', '==', takerStudentId)
+      where('takerIP', '==', takerIP)
     );
     
-    const querySnapshot = await getDocs(q);
-    const attemptNumber = querySnapshot.size + 1;
+    const ipAttemptsSnapshot = await getDocs(ipAttemptsQuery);
+    const attemptNumber = ipAttemptsSnapshot.size + 1;
     
     const attemptId = generateId();
     
