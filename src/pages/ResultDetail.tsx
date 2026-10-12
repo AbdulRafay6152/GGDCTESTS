@@ -52,89 +52,106 @@ export default function ResultDetail() {
 
   return (
     <div className="max-w-4xl">
-      <div className="flex items-center gap-3 mb-4 pb-3 border-b" style={{ borderColor: 'var(--border)' }}>
-        <Link to={`/test/${test.id}/results`} className="text-xs no-underline" style={{ color: 'var(--text-muted)' }}>
-          ← Back to Results
+      {/* Breadcrumb */}
+      <div className="flex items-center gap-3 mb-6 pb-4 border-b" style={{ borderColor: 'var(--border)' }}>
+        <Link to={`/test/${test.id}/results`} className="text-xs no-underline flex items-center gap-1" style={{ color: 'var(--text-muted)' }}>
+          <ArrowLeft size={12} /> Back to Results
         </Link>
       </div>
 
-      <div className="flex items-start justify-between mb-4 flex-wrap gap-3">
-        <div>
-          <h1 className="text-base font-semibold tracking-tight" style={{ fontFamily: 'var(--font-heading)', color: 'var(--text)' }}>
-            {attempt.takerName}
-          </h1>
-          {attempt.takerFatherName && (
-            <p className="text-xs" style={{ color: 'var(--text-secondary)' }}>
-              S/O {attempt.takerFatherName}
-            </p>
-          )}
-          <p className="text-xs" style={{ color: 'var(--text-secondary)' }}>
-            {attempt.takerEmail} {attempt.takerStudentId && `· ID: ${attempt.takerStudentId}`}
-          </p>
+      {/* Student Info Header */}
+      <div className="mb-6">
+        <div className="flex items-start justify-between mb-4 flex-wrap gap-4">
+          <div>
+            <h1 className="text-xl font-bold tracking-tight mb-1" style={{ fontFamily: 'var(--font-heading)', color: 'var(--text)' }}>
+              {attempt.takerName}
+            </h1>
+            {attempt.takerFatherName && (
+              <p className="text-sm mb-1" style={{ color: 'var(--text-secondary)' }}>
+                S/O {attempt.takerFatherName}
+              </p>
+            )}
+            <div className="flex flex-wrap gap-3 mt-2">
+              {attempt.takerEmail && (
+                <span className="text-xs font-mono px-2 py-1 rounded" style={{ backgroundColor: 'var(--bg-secondary)', color: 'var(--text-secondary)' }}>
+                  {attempt.takerEmail}
+                </span>
+              )}
+              {attempt.takerStudentId && (
+                <span className="text-xs font-mono px-2 py-1 rounded" style={{ backgroundColor: 'var(--bg-secondary)', color: 'var(--text-secondary)' }}>
+                  ID: {attempt.takerStudentId}
+                </span>
+              )}
+              {attempt.takerIP && (
+                <span className="text-xs font-mono px-2 py-1 rounded" style={{ backgroundColor: 'var(--bg-secondary)', color: 'var(--text-muted)' }}>
+                  IP: {attempt.takerIP}
+                </span>
+              )}
+            </div>
+          </div>
+          <button onClick={handleExportPDF}
+            className="flex items-center gap-2 px-4 py-2 rounded text-sm font-medium border cursor-pointer"
+            style={{ borderColor: 'var(--border)', backgroundColor: 'var(--surface)', color: 'var(--text)' }}>
+            <Download size={14} /> Export PDF
+          </button>
         </div>
-        <button onClick={handleExportPDF}
-          className="flex items-center gap-1.5 px-3 py-1.5 rounded text-xs font-medium border cursor-pointer"
-          style={{ borderColor: 'var(--border)', backgroundColor: 'var(--surface)', color: 'var(--text)' }}>
-          <Download size={12} /> Export PDF
-        </button>
       </div>
 
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 mb-4">
-        <div className="p-2.5 rounded border" style={{ backgroundColor: 'var(--surface)', borderColor: 'var(--border)' }}>
-          <div className="text-lg font-bold" style={{ color: (attempt.percentage || 0) >= 50 ? 'var(--success)' : 'var(--error)' }}>
+      {/* Stats Grid */}
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-6">
+        <div className="p-4 rounded border" style={{ backgroundColor: 'var(--surface)', borderColor: 'var(--border)' }}>
+          <div className="text-2xl font-bold mb-1" style={{ color: (attempt.percentage || 0) >= 50 ? 'var(--success)' : 'var(--error)' }}>
             {attempt.percentage}%
           </div>
-          <div className="text-xs" style={{ color: 'var(--text-muted)' }}>Score</div>
+          <div className="text-xs font-medium" style={{ color: 'var(--text-muted)' }}>Score</div>
         </div>
-        <div className="p-2.5 rounded border" style={{ backgroundColor: 'var(--surface)', borderColor: 'var(--border)' }}>
-          <div className="text-lg font-bold" style={{ color: 'var(--text)' }}>{attempt.score}/{attempt.maxScore}</div>
-          <div className="text-xs" style={{ color: 'var(--text-muted)' }}>Points</div>
+        <div className="p-4 rounded border" style={{ backgroundColor: 'var(--surface)', borderColor: 'var(--border)' }}>
+          <div className="text-2xl font-bold mb-1" style={{ color: 'var(--text)' }}>{attempt.score}/{attempt.maxScore}</div>
+          <div className="text-xs font-medium" style={{ color: 'var(--text-muted)' }}>Points</div>
         </div>
-        <div className="p-2.5 rounded border" style={{ backgroundColor: 'var(--surface)', borderColor: 'var(--border)' }}>
-          <div className="text-lg font-bold" style={{ color: 'var(--text)' }}>
+        <div className="p-4 rounded border" style={{ backgroundColor: 'var(--surface)', borderColor: 'var(--border)' }}>
+          <div className="text-2xl font-bold mb-1" style={{ color: 'var(--text)' }}>
             {attempt.timeTakenSeconds ? `${Math.floor(attempt.timeTakenSeconds / 60)}m ${attempt.timeTakenSeconds % 60}s` : '—'}
           </div>
-          <div className="text-xs" style={{ color: 'var(--text-muted)' }}>Time Taken</div>
+          <div className="text-xs font-medium" style={{ color: 'var(--text-muted)' }}>Time Taken</div>
         </div>
-        <div className="p-2.5 rounded border" style={{ backgroundColor: 'var(--surface)', borderColor: 'var(--border)' }}>
-          <div className="text-lg font-bold" style={{ color: 'var(--text)' }}>#{attempt.attemptNumber}</div>
-          <div className="text-xs" style={{ color: 'var(--text-muted)' }}>Attempt</div>
+        <div className="p-4 rounded border" style={{ backgroundColor: 'var(--surface)', borderColor: 'var(--border)' }}>
+          <div className="text-2xl font-bold mb-1" style={{ color: 'var(--text)' }}>#{attempt.attemptNumber}</div>
+          <div className="text-xs font-medium" style={{ color: 'var(--text-muted)' }}>Attempt</div>
         </div>
       </div>
 
+      {/* Anti-Cheat Events */}
       {attempt.antiCheatEvents.length > 0 && (
-        <div className="mb-4 p-3 rounded border" style={{ backgroundColor: 'var(--warning)' + '08', borderColor: 'var(--warning)' + '40' }}>
-          <h3 className="text-xs font-semibold mb-2" style={{ color: 'var(--warning)' }}>
+        <div className="mb-6 p-4 rounded border" style={{ backgroundColor: 'var(--warning)' + '08', borderColor: 'var(--warning)' + '40' }}>
+          <h3 className="text-sm font-semibold mb-3 flex items-center gap-2" style={{ color: 'var(--warning)' }}>
+            <span className="text-lg">⚠</span>
             Anti-Cheat Events ({attempt.antiCheatEvents.length})
           </h3>
-          <div className="space-y-1">
+          <div className="space-y-2">
             {attempt.antiCheatEvents.map(event => (
-              <div key={event.id} className="flex items-center gap-2 text-xs" style={{ color: 'var(--text-secondary)' }}>
-                <span className="font-mono" style={{ color: 'var(--text-muted)' }}>
+              <div key={event.id} className="flex items-start gap-3 text-xs p-2 rounded" style={{ backgroundColor: 'var(--surface)' }}>
+                <span className="font-mono font-medium" style={{ color: 'var(--text-muted)' }}>
                   {format(new Date(event.timestamp), 'HH:mm:ss')}
                 </span>
-                <span>{event.type}</span>
-                {event.details && <span style={{ color: 'var(--text-muted)' }}>— {event.details}</span>}
+                <span className="font-medium" style={{ color: 'var(--text)' }}>{event.type}</span>
+                {event.details && <span style={{ color: 'var(--text-secondary)' }}>— {event.details}</span>}
               </div>
             ))}
           </div>
         </div>
       )}
 
-      <h2 className="text-xs font-semibold mb-3" style={{ fontFamily: 'var(--font-heading)', color: 'var(--text)' }}>
-        Question Breakdown
-      </h2>
       {/* Essay Grading Section */}
       {test.questions.some((q: Question) => q.type === 'essay') && (
-        <div className="mb-4 p-3 rounded border" style={{ backgroundColor: 'var(--surface)', borderColor: 'var(--border)' }}>
+        <div className="mb-6 p-4 rounded border" style={{ backgroundColor: 'var(--surface)', borderColor: 'var(--border)' }}>
           <div className="flex items-center justify-between mb-3">
-            <h3 className="text-xs font-semibold" style={{ color: 'var(--text)' }}>
+            <h3 className="text-sm font-semibold" style={{ color: 'var(--text)' }}>
               Manual Grading Required
             </h3>
             <button
               onClick={async () => {
                 setSaving(true);
-                // Update attempt with essay grades
                 const updatedAttempt = { ...attempt };
                 let totalScore = updatedAttempt.score || 0;
                 
@@ -156,19 +173,30 @@ export default function ResultDetail() {
                 setSaving(false);
               }}
               disabled={saving}
-              className="flex items-center gap-1 px-2 py-1 rounded text-xs font-medium border cursor-pointer disabled:opacity-50"
+              className="flex items-center gap-2 px-3 py-1.5 rounded text-xs font-semibold border cursor-pointer disabled:opacity-50"
               style={{ borderColor: 'var(--border)', backgroundColor: 'var(--primary)', color: '#fff' }}
             >
-              <Save size={10} /> {saving ? 'Saving...' : 'Save Grades'}
+              <Save size={12} /> {saving ? 'Saving...' : 'Save Grades'}
             </button>
           </div>
-          <p className="text-xs mb-2" style={{ color: 'var(--text-muted)' }}>
+          <p className="text-xs" style={{ color: 'var(--text-muted)' }}>
             Grade essay questions manually. Points will be added to the total score.
           </p>
         </div>
       )}
 
-      <div className="space-y-2">
+      {/* Question Breakdown Header */}
+      <div className="mb-4 pb-3 border-b" style={{ borderColor: 'var(--border)' }}>
+        <h2 className="text-base font-semibold" style={{ fontFamily: 'var(--font-heading)', color: 'var(--text)' }}>
+          Question Breakdown
+        </h2>
+        <p className="text-xs mt-1" style={{ color: 'var(--text-muted)' }}>
+          {test.questions.length} questions · Detailed review of each question
+        </p>
+      </div>
+
+      {/* Questions List */}
+      <div className="space-y-4">
         {test.questions.map((q: Question, idx: number) => {
           const answer = attempt.answers.find(a => a.questionId === q.id);
           const isCorrect = checkCorrectness(q, answer);
@@ -176,44 +204,69 @@ export default function ResultDetail() {
           const essayGrade = answer?.essayGrade ?? essayGrades[q.id];
 
           return (
-            <div key={q.id} className="p-3 rounded border" style={{ backgroundColor: 'var(--surface)', borderColor: 'var(--border)' }}>
-              <div className="flex items-start justify-between mb-2">
+            <div key={q.id} className="p-5 rounded border" style={{ backgroundColor: 'var(--surface)', borderColor: 'var(--border)' }}>
+              {/* Question Header */}
+              <div className="flex items-start justify-between mb-4 pb-3 border-b" style={{ borderColor: 'var(--border)' }}>
+                <div className="flex items-center gap-3">
+                  <div className="flex items-center justify-center w-8 h-8 rounded font-bold text-sm" 
+                    style={{ 
+                      backgroundColor: isCorrect === true ? 'var(--success)' + '15' : isCorrect === false ? 'var(--error)' + '15' : 'var(--bg-secondary)',
+                      color: isCorrect === true ? 'var(--success)' : isCorrect === false ? 'var(--error)' : 'var(--text-muted)'
+                    }}>
+                    {idx + 1}
+                  </div>
+                  <div>
+                    {isEssay ? (
+                      <span className="text-xs font-semibold px-2 py-1 rounded" style={{ backgroundColor: 'var(--accent)' + '20', color: 'var(--accent)' }}>
+                        Essay - Manual Grading
+                      </span>
+                    ) : (
+                      <div className="flex items-center gap-2">
+                        {isCorrect === true && <Check size={16} strokeWidth={2.5} style={{ color: 'var(--success)' }} />}
+                        {isCorrect === false && <X size={16} strokeWidth={2.5} style={{ color: 'var(--error)' }} />}
+                        {isCorrect === null && <Minus size={16} style={{ color: 'var(--text-muted)' }} />}
+                        <span className="text-xs font-medium" style={{ color: isCorrect === true ? 'var(--success)' : isCorrect === false ? 'var(--error)' : 'var(--text-muted)' }}>
+                          {isCorrect === true ? 'Correct' : isCorrect === false ? 'Incorrect' : 'Not answered'}
+                        </span>
+                      </div>
+                    )}
+                    <div className="text-xs mt-1" style={{ color: 'var(--text-muted)' }}>{q.points} points</div>
+                  </div>
+                </div>
                 <div className="flex items-center gap-2">
-                  <span className="text-xs font-medium" style={{ color: 'var(--text-muted)' }}>Q{idx + 1}</span>
-                  {isEssay ? (
-                    <span className="text-xs px-1.5 py-0.5 rounded" style={{ backgroundColor: 'var(--accent)' + '20', color: 'var(--accent)' }}>
-                      Essay - Manual Grading
-                    </span>
-                  ) : (
-                    <>
-                      {isCorrect === true && <Check size={12} style={{ color: 'var(--success)' }} />}
-                      {isCorrect === false && <X size={12} style={{ color: 'var(--error)' }} />}
-                      {isCorrect === null && <Minus size={12} style={{ color: 'var(--text-muted)' }} />}
-                    </>
-                  )}
-                  <span className="text-xs" style={{ color: 'var(--text-muted)' }}>{q.points} pts</span>
                   {isEssay && essayGrade !== undefined && (
-                    <span className="text-xs font-semibold" style={{ color: 'var(--success)' }}>
+                    <span className="text-sm font-bold px-3 py-1 rounded" style={{ backgroundColor: 'var(--success)' + '15', color: 'var(--success)' }}>
                       Graded: {essayGrade}/{q.points}
                     </span>
                   )}
+                  {answer?.flagged && (
+                    <span className="text-xs font-medium px-2 py-1 rounded" style={{ backgroundColor: 'var(--warning)' + '20', color: 'var(--warning)' }}>
+                      ⚑ Flagged
+                    </span>
+                  )}
                 </div>
-                {answer?.flagged && (
-                  <span className="text-xs px-1.5 py-0.5 rounded" style={{ backgroundColor: 'var(--warning)' + '20', color: 'var(--warning)' }}>
-                    Flagged
-                  </span>
-                )}
               </div>
-              <p className="text-xs mb-2" style={{ color: 'var(--text)' }}>{q.text}</p>
-              
+
+              {/* Question Text */}
+              <div className="mb-4">
+                <p className="text-sm leading-relaxed" style={{ color: 'var(--text)' }}>{q.text}</p>
+              </div>
+
               {/* Student Answer */}
-              <div className="mb-2">
-                <span className="text-xs font-medium" style={{ color: 'var(--text-muted)' }}>Student answer: </span>
-                <div className="mt-1 p-2 rounded text-xs" style={{ backgroundColor: 'var(--bg-secondary)', color: 'var(--text)' }}>
+              <div className="mb-4">
+                <label className="text-xs font-semibold block mb-2" style={{ color: 'var(--text-muted)' }}>
+                  Student's Answer
+                </label>
+                <div className="p-3 rounded border" style={{ 
+                  backgroundColor: 'var(--bg-secondary)', 
+                  borderColor: isCorrect === false ? 'var(--error)' + '40' : isCorrect === true ? 'var(--success)' + '40' : 'var(--border)'
+                }}>
                   {isEssay ? (
-                    <div className="whitespace-pre-wrap">{formatAnswer(answer?.answer) || '(no answer)'}</div>
+                    <div className="text-sm whitespace-pre-wrap leading-relaxed" style={{ color: 'var(--text)' }}>
+                      {formatAnswer(answer?.answer) || '(no answer)'}
+                    </div>
                   ) : (
-                    <span style={{ color: isCorrect === false ? 'var(--error)' : 'var(--text)' }}>
+                    <span className="text-sm" style={{ color: isCorrect === false ? 'var(--error)' : isCorrect === true ? 'var(--success)' : 'var(--text)' }}>
                       {formatAnswer(answer?.answer) || '(no answer)'}
                     </span>
                   )}
@@ -222,8 +275,8 @@ export default function ResultDetail() {
 
               {/* Essay Grading Input */}
               {isEssay && (
-                <div className="mt-2 p-2 rounded" style={{ backgroundColor: 'var(--bg-secondary)' }}>
-                  <label className="text-xs font-medium block mb-1" style={{ color: 'var(--text)' }}>
+                <div className="mb-4 p-4 rounded border" style={{ backgroundColor: 'var(--bg-secondary)', borderColor: 'var(--border)' }}>
+                  <label className="text-xs font-semibold block mb-2" style={{ color: 'var(--text)' }}>
                     Assign Points (0-{q.points}):
                   </label>
                   <input
@@ -235,7 +288,7 @@ export default function ResultDetail() {
                       const value = Math.min(q.points, Math.max(0, parseFloat(e.target.value) || 0));
                       setEssayGrades({ ...essayGrades, [q.id]: value });
                     }}
-                    className="w-20 px-2 py-1 rounded border text-xs outline-none"
+                    className="w-24 px-3 py-2 rounded border text-sm outline-none"
                     style={{ backgroundColor: 'var(--surface)', borderColor: 'var(--border)', color: 'var(--text)' }}
                     placeholder="0"
                   />
@@ -243,22 +296,32 @@ export default function ResultDetail() {
               )}
 
               {/* Correct Answer & Explanation */}
-              {!isEssay && (
-                <>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
-                    {test.settings.showCorrectAnswers && (
-                      <div>
-                        <span className="font-medium" style={{ color: 'var(--text-muted)' }}>Correct answer: </span>
-                        <span style={{ color: 'var(--success)' }}>{getCorrectAnswer(q)}</span>
-                      </div>
-                    )}
+              {!isEssay && test.settings.showCorrectAnswers && (
+                <div className="space-y-3">
+                  <div>
+                    <label className="text-xs font-semibold block mb-2" style={{ color: 'var(--text-muted)' }}>
+                      Correct Answer
+                    </label>
+                    <div className="p-3 rounded border" style={{ backgroundColor: 'var(--success)' + '08', borderColor: 'var(--success)' + '30' }}>
+                      <span className="text-sm font-medium" style={{ color: 'var(--success)' }}>
+                        {getCorrectAnswer(q)}
+                      </span>
+                    </div>
                   </div>
-                  {test.settings.showCorrectAnswers && q.explanation && (
-                    <p className="text-xs mt-2 p-2 rounded" style={{ backgroundColor: 'var(--bg-secondary)', color: 'var(--text-secondary)' }}>
-                      {q.explanation}
-                    </p>
+                  
+                  {q.explanation && (
+                    <div>
+                      <label className="text-xs font-semibold block mb-2" style={{ color: 'var(--text-muted)' }}>
+                        Explanation
+                      </label>
+                      <div className="p-3 rounded border" style={{ backgroundColor: 'var(--bg-secondary)', borderColor: 'var(--border)' }}>
+                        <p className="text-sm leading-relaxed" style={{ color: 'var(--text-secondary)' }}>
+                          {q.explanation}
+                        </p>
+                      </div>
+                    </div>
                   )}
-                </>
+                </div>
               )}
             </div>
           );
