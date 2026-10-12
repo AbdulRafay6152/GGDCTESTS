@@ -220,7 +220,7 @@ export default function Results() {
           </p>
         </div>
       ) : (
-        <div className="border rounded overflow-x-auto" style={{ borderColor: 'var(--border)' }}>
+        <div className="overflow-x-auto max-w-full">
           <table className="w-full min-w-[600px]">
             <thead>
               <tr style={{ backgroundColor: 'var(--bg-secondary)' }}>

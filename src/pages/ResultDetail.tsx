@@ -53,7 +53,7 @@ export default function ResultDetail() {
   return (
     <div className="max-w-4xl">
       {/* Breadcrumb */}
-      <div className="flex items-center gap-3 mb-6 pb-4 border-b" style={{ borderColor: 'var(--border)' }}>
+      <div className="flex items-center gap-3 mb-6 pb-4">
         <Link to={`/test/${test.id}/results`} className="text-xs no-underline flex items-center gap-1" style={{ color: 'var(--text-muted)' }}>
           <ArrowLeft size={12} /> Back to Results
         </Link>
@@ -99,23 +99,23 @@ export default function ResultDetail() {
 
       {/* Stats Grid */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-6">
-        <div className="p-4 rounded border" style={{ backgroundColor: 'var(--surface)', borderColor: 'var(--border)' }}>
+        <div className="p-4 rounded" style={{ backgroundColor: 'var(--surface)' }}>
           <div className="text-2xl font-bold mb-1" style={{ color: (attempt.percentage || 0) >= 50 ? 'var(--success)' : 'var(--error)' }}>
             {attempt.percentage}%
           </div>
           <div className="text-xs font-medium" style={{ color: 'var(--text-muted)' }}>Score</div>
         </div>
-        <div className="p-4 rounded border" style={{ backgroundColor: 'var(--surface)', borderColor: 'var(--border)' }}>
+        <div className="p-4 rounded" style={{ backgroundColor: 'var(--surface)' }}>
           <div className="text-2xl font-bold mb-1" style={{ color: 'var(--text)' }}>{attempt.score}/{attempt.maxScore}</div>
           <div className="text-xs font-medium" style={{ color: 'var(--text-muted)' }}>Points</div>
         </div>
-        <div className="p-4 rounded border" style={{ backgroundColor: 'var(--surface)', borderColor: 'var(--border)' }}>
+        <div className="p-4 rounded" style={{ backgroundColor: 'var(--surface)' }}>
           <div className="text-2xl font-bold mb-1" style={{ color: 'var(--text)' }}>
             {attempt.timeTakenSeconds ? `${Math.floor(attempt.timeTakenSeconds / 60)}m ${attempt.timeTakenSeconds % 60}s` : '—'}
           </div>
           <div className="text-xs font-medium" style={{ color: 'var(--text-muted)' }}>Time Taken</div>
         </div>
-        <div className="p-4 rounded border" style={{ backgroundColor: 'var(--surface)', borderColor: 'var(--border)' }}>
+        <div className="p-4 rounded" style={{ backgroundColor: 'var(--surface)' }}>
           <div className="text-2xl font-bold mb-1" style={{ color: 'var(--text)' }}>#{attempt.attemptNumber}</div>
           <div className="text-xs font-medium" style={{ color: 'var(--text-muted)' }}>Attempt</div>
         </div>
@@ -123,7 +123,7 @@ export default function ResultDetail() {
 
       {/* Anti-Cheat Events */}
       {attempt.antiCheatEvents.length > 0 && (
-        <div className="mb-6 p-4 rounded border" style={{ backgroundColor: 'var(--warning)' + '08', borderColor: 'var(--warning)' + '40' }}>
+        <div className="mb-6 p-4 rounded" style={{ backgroundColor: 'var(--warning)' + '08' }}>
           <h3 className="text-sm font-semibold mb-3 flex items-center gap-2" style={{ color: 'var(--warning)' }}>
             <span className="text-lg">⚠</span>
             Anti-Cheat Events ({attempt.antiCheatEvents.length})
@@ -144,7 +144,7 @@ export default function ResultDetail() {
 
       {/* Essay Grading Section */}
       {test.questions.some((q: Question) => q.type === 'essay') && (
-        <div className="mb-6 p-4 rounded border" style={{ backgroundColor: 'var(--surface)', borderColor: 'var(--border)' }}>
+        <div className="mb-6 p-4 rounded" style={{ backgroundColor: 'var(--surface)' }}>
           <div className="flex items-center justify-between mb-3">
             <h3 className="text-sm font-semibold" style={{ color: 'var(--text)' }}>
               Manual Grading Required
@@ -186,7 +186,7 @@ export default function ResultDetail() {
       )}
 
       {/* Question Breakdown Header */}
-      <div className="mb-4 pb-3 border-b" style={{ borderColor: 'var(--border)' }}>
+      <div className="mb-4 pb-3">
         <h2 className="text-base font-semibold" style={{ fontFamily: 'var(--font-heading)', color: 'var(--text)' }}>
           Question Breakdown
         </h2>
@@ -204,9 +204,9 @@ export default function ResultDetail() {
           const essayGrade = answer?.essayGrade ?? essayGrades[q.id];
 
           return (
-            <div key={q.id} className="p-5 rounded border" style={{ backgroundColor: 'var(--surface)', borderColor: 'var(--border)' }}>
+            <div key={q.id} className="p-5 rounded" style={{ backgroundColor: 'var(--surface)' }}>
               {/* Question Header */}
-              <div className="flex items-start justify-between mb-4 pb-3 border-b" style={{ borderColor: 'var(--border)' }}>
+              <div className="flex items-start justify-between mb-4 pb-3">
                 <div className="flex items-center gap-3">
                   <div className="flex items-center justify-center w-8 h-8 rounded font-bold text-sm" 
                     style={{ 
@@ -257,9 +257,8 @@ export default function ResultDetail() {
                 <label className="text-xs font-semibold block mb-2" style={{ color: 'var(--text-muted)' }}>
                   Student's Answer
                 </label>
-                <div className="p-3 rounded border" style={{ 
-                  backgroundColor: 'var(--bg-secondary)', 
-                  borderColor: isCorrect === false ? 'var(--error)' + '40' : isCorrect === true ? 'var(--success)' + '40' : 'var(--border)'
+                <div className="p-3 rounded" style={{ 
+                  backgroundColor: 'var(--bg-secondary)'
                 }}>
                   {isEssay ? (
                     <div className="text-sm whitespace-pre-wrap leading-relaxed" style={{ color: 'var(--text)' }}>
@@ -275,7 +274,7 @@ export default function ResultDetail() {
 
               {/* Essay Grading Input */}
               {isEssay && (
-                <div className="mb-4 p-4 rounded border" style={{ backgroundColor: 'var(--bg-secondary)', borderColor: 'var(--border)' }}>
+                <div className="mb-4 p-4 rounded" style={{ backgroundColor: 'var(--bg-secondary)' }}>
                   <label className="text-xs font-semibold block mb-2" style={{ color: 'var(--text)' }}>
                     Assign Points (0-{q.points}):
                   </label>
@@ -302,7 +301,7 @@ export default function ResultDetail() {
                     <label className="text-xs font-semibold block mb-2" style={{ color: 'var(--text-muted)' }}>
                       Correct Answer
                     </label>
-                    <div className="p-3 rounded border" style={{ backgroundColor: 'var(--success)' + '08', borderColor: 'var(--success)' + '30' }}>
+                    <div className="p-3 rounded" style={{ backgroundColor: 'var(--success)' + '08' }}>
                       <span className="text-sm font-medium" style={{ color: 'var(--success)' }}>
                         {getCorrectAnswer(q)}
                       </span>
@@ -314,7 +313,7 @@ export default function ResultDetail() {
                       <label className="text-xs font-semibold block mb-2" style={{ color: 'var(--text-muted)' }}>
                         Explanation
                       </label>
-                      <div className="p-3 rounded border" style={{ backgroundColor: 'var(--bg-secondary)', borderColor: 'var(--border)' }}>
+                      <div className="p-3 rounded" style={{ backgroundColor: 'var(--bg-secondary)' }}>
                         <p className="text-sm leading-relaxed" style={{ color: 'var(--text-secondary)' }}>
                           {q.explanation}
                         </p>
