@@ -14,6 +14,7 @@ import Results from './pages/Results';
 import ResultDetail from './pages/ResultDetail';
 import Profile from './pages/Profile';
 import ResetPassword from './pages/ResetPassword';
+import AdminSetup from './pages/AdminSetup';
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const { user, loading } = useAuth();
@@ -47,6 +48,7 @@ function AppRoutes() {
         <Route path="/" element={<Landing />} />
         <Route path="/login" element={<Login />} />
         <Route path="/reset-password" element={<ResetPassword />} />
+        <Route path="/admin-setup" element={<AdminSetup />} />
         <Route path="/take/:slug" element={<TestTake />} />
         <Route path="/admin" element={<AdminRoute><AdminPanel /></AdminRoute>} />
         <Route path="/" element={<ProtectedRoute><Layout /></ProtectedRoute>}>
