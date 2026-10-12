@@ -89,7 +89,8 @@ export function setCurrentUser(user: User | null): void {
 // AUTH FUNCTIONS
 // ============================================
 
-export async function signup(email: string, name: string, password: string): Promise<{ success: boolean; error?: string }> {
+// Admin-only user creation function
+export async function createUser(email: string, name: string, password: string): Promise<{ success: boolean; error?: string }> {
   try {
     const userCredential = await createUserWithEmailAndPassword(auth, email, password);
     const firebaseUser = userCredential.user;
@@ -97,23 +98,58 @@ export async function signup(email: string, name: string, password: string): Pro
     // Update profile with name
     await firebaseUpdateProfile(firebaseUser, { displayName: name });
     
-    // Create user document in Firestore
+    // Create user document in Firestore with role 'user'
     const userData: Omit<User, 'id'> = {
       email,
       name,
+      role: 'user',
       createdAt: new Date().toISOString()
     };
     
     await setDoc(doc(db, 'users', firebaseUser.uid), userData);
     
-    currentUser = {
-      id: firebaseUser.uid,
-      ...userData
-    };
-    
     return { success: true };
   } catch (error: any) {
     return { success: false, error: translateFirebaseError(error) };
+  }
+}
+
+// Initialize admin account (called once on app load)
+export async function initializeAdminAccount(): Promise<void> {
+  const adminEmail = 'adminSuperior@college.com';
+  const adminPassword = 'Admin123#@!4--_qwerty';
+  
+  try {
+    // Check if admin already exists
+    const adminQuery = query(collection(db, 'users'), where('email', '==', adminEmail));
+    const adminSnapshot = await getDocs(adminQuery);
+    
+    if (adminSnapshot.empty) {
+      // Create admin account
+      const userCredential = await createUserWithEmailAndPassword(auth, adminEmail, adminPassword);
+      const firebaseUser = userCredential.user;
+      
+      await firebaseUpdateProfile(firebaseUser, { displayName: 'Superior Admin' });
+      
+      const adminData: Omit<User, 'id'> = {
+        email: adminEmail,
+        name: 'Superior Admin',
+        role: 'admin',
+        createdAt: new Date().toISOString()
+      };
+      
+      await setDoc(doc(db, 'users', firebaseUser.uid), adminData);
+      
+      // Sign out immediately after creating admin
+      await signOut(auth);
+      
+      console.log('Admin account created successfully');
+    }
+  } catch (error: any) {
+    // If admin already exists, that's fine
+    if (error.code !== 'auth/email-already-in-use') {
+      console.error('Error initializing admin account:', error);
+    }
   }
 }
 
@@ -130,6 +166,7 @@ export async function login(email: string, password: string): Promise<{ success:
       id: firebaseUser.uid,
       email: userData?.email || email,
       name: userData?.name || firebaseUser.displayName || '',
+      role: userData?.role || 'user',
       createdAt: userData?.createdAt || new Date().toISOString()
     };
     

@@ -21,7 +21,7 @@ export default function Landing() {
               <ClipboardList size={14} color="#fff" strokeWidth={2.5} />
             </div>
             <span className="font-semibold text-sm tracking-tight" style={{ fontFamily: 'var(--font-heading)', color: 'var(--text)' }}>
-              GGDC
+              Superior Tests
             </span>
           </div>
           <div className="flex items-center gap-2">
@@ -41,22 +41,13 @@ export default function Landing() {
                 Dashboard
               </Link>
             ) : (
-              <>
-                <Link
-                  to="/login"
-                  className="px-3 py-1.5 text-xs font-medium no-underline"
-                  style={{ color: 'var(--text-secondary)' }}
-                >
-                  Log in
-                </Link>
-                <Link
-                  to="/signup"
-                  className="px-3 py-1.5 text-xs font-medium no-underline rounded"
-                  style={{ backgroundColor: 'var(--primary)', color: '#fff' }}
-                >
-                  Sign up
-                </Link>
-              </>
+              <Link
+                to="/login"
+                className="px-3 py-1.5 text-xs font-medium no-underline rounded"
+                style={{ backgroundColor: 'var(--primary)', color: '#fff' }}
+              >
+                Log in
+              </Link>
             )}
           </div>
         </div>
@@ -69,27 +60,20 @@ export default function Landing() {
               className="text-2xl font-bold mb-3 tracking-tight"
               style={{ fontFamily: 'var(--font-heading)', color: 'var(--text)', lineHeight: 1.3 }}
             >
-              Government Girls Degree College
+              Superior Tests
             </h1>
             <p className="text-sm mb-6 leading-relaxed" style={{ color: 'var(--text-secondary)' }}>
-              Professional online testing platform for GGDC. Create assessments, enforce academic integrity, 
-              and generate detailed reports. Built for our college community.
+              Professional online testing platform. Create assessments, enforce academic integrity, 
+              and generate detailed reports. Built for colleges and universities.
             </p>
             {!user && (
               <div className="flex gap-2">
                 <Link
-                  to="/signup"
+                  to="/login"
                   className="px-4 py-2 text-xs font-semibold no-underline rounded"
                   style={{ backgroundColor: 'var(--primary)', color: '#fff' }}
                 >
-                  Create free account
-                </Link>
-                <Link
-                  to="/login"
-                  className="px-4 py-2 text-xs font-medium no-underline rounded border"
-                  style={{ borderColor: 'var(--border)', color: 'var(--text-secondary)' }}
-                >
-                  Log in
+                  Sign in with your account
                 </Link>
               </div>
             )}
@@ -108,7 +92,7 @@ export default function Landing() {
 
       <footer className="border-t py-4" style={{ borderColor: 'var(--border)' }}>
         <div className="max-w-6xl mx-auto px-6 flex items-center justify-between">
-          <span className="text-xs" style={{ color: 'var(--text-muted)' }}>GGDC</span>
+          <span className="text-xs" style={{ color: 'var(--text-muted)' }}>Superior Tests</span>
           <span className="text-xs" style={{ color: 'var(--text-muted)' }}>Government Girls Degree College</span>
         </div>
       </footer>

@@ -28,7 +28,7 @@ export default function Layout() {
                 <ClipboardList size={14} color="#fff" strokeWidth={2.5} />
               </div>
               <span className="font-semibold text-sm tracking-tight" style={{ fontFamily: 'var(--font-heading)', color: 'var(--text)' }}>
-                GGDC
+                Superior Tests
               </span>
             </Link>
             <nav className="hidden sm:flex items-center gap-4">
@@ -42,6 +42,18 @@ export default function Layout() {
               >
                 My Tests
               </Link>
+              {user?.role === 'admin' && (
+                <Link
+                  to="/admin"
+                  className="text-xs font-medium no-underline pb-0.5"
+                  style={{
+                    color: location.pathname === '/admin' ? 'var(--text)' : 'var(--text-muted)',
+                    borderBottom: location.pathname === '/admin' ? '1.5px solid var(--primary)' : '1.5px solid transparent',
+                  }}
+                >
+                  Admin Panel
+                </Link>
+              )}
             </nav>
           </div>
           <div className="flex items-center gap-1">
@@ -80,7 +92,7 @@ export default function Layout() {
       <footer className="border-t py-3 mt-auto" style={{ borderColor: 'var(--border)' }}>
         <div className="max-w-6xl mx-auto px-6 flex items-center justify-between">
           <span className="text-xs" style={{ color: 'var(--text-muted)' }}>
-            Government Girls Degree College
+            Superior Tests
           </span>
         </div>
       </footer>

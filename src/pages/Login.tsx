@@ -40,7 +40,7 @@ export default function Login() {
               <ClipboardList size={14} color="#fff" strokeWidth={2.5} />
             </div>
             <span className="font-semibold text-sm tracking-tight" style={{ fontFamily: 'var(--font-heading)', color: 'var(--text)' }}>
-              GGDC
+              Superior Tests
             </span>
           </Link>
           <button
@@ -115,11 +115,8 @@ export default function Login() {
           </Link>
         </p>
 
-        <p className="mt-2 text-xs text-center" style={{ color: 'var(--text-muted)' }}>
-          No account?{' '}
-          <Link to="/signup" style={{ color: 'var(--accent)' }}>
-            Sign up
-          </Link>
+        <p className="mt-4 text-xs text-center" style={{ color: 'var(--text-muted)' }}>
+          Don't have an account? Contact your administrator.
         </p>
       </div>
     </div>

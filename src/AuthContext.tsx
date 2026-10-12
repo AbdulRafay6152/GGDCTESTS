@@ -8,6 +8,7 @@ interface UserData {
   uid: string;
   email: string;
   name: string;
+  role: 'admin' | 'user';
 }
 
 interface AuthContextType {
@@ -31,6 +32,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             uid: firebaseUser.uid,
             email: firebaseUser.email || '',
             name: data?.name || firebaseUser.displayName || '',
+            role: data?.role || 'user',
           };
           setUser(userData);
           // Sync with firestoreStore
@@ -38,6 +40,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             id: userData.uid,
             email: userData.email,
             name: userData.name,
+            role: userData.role,
             createdAt: data?.createdAt || new Date().toISOString()
           });
         } catch (err) {
@@ -46,12 +49,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             uid: firebaseUser.uid,
             email: firebaseUser.email || '',
             name: firebaseUser.displayName || '',
+            role: 'user' as const,
           };
           setUser(userData);
           setCurrentUser({
             id: userData.uid,
             email: userData.email,
             name: userData.name,
+            role: userData.role,
             createdAt: new Date().toISOString()
           });
         }
