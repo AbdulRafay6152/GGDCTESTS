@@ -33,26 +33,101 @@ function addHeader(doc: jsPDF, title: string) {
   doc.line(14, 34, 196, 34);
 }
 
+// Convert LaTeX math to plain text for PDF
+function latexToPlainText(text: string): string {
+  if (!text) return '';
+  
+  let result = text;
+  
+  // Remove math delimiters
+  result = result.replace(/\$\$(.+?)\$\$/g, '$1');
+  result = result.replace(/\$(.+?)\$/g, '$1');
+  
+  // Convert common LaTeX commands to Unicode/plain text
+  const replacements: Record<string, string> = {
+    '\\sqrt': '√',
+    '\\pi': 'π',
+    '\\times': '×',
+    '\\div': '÷',
+    '\\pm': '±',
+    '\\leq': '≤',
+    '\\geq': '≥',
+    '\\neq': '≠',
+    '\\infty': '∞',
+    '\\approx': '≈',
+    '\\cdot': '·',
+    '\\ldots': '...',
+    '\\alpha': 'α',
+    '\\beta': 'β',
+    '\\gamma': 'γ',
+    '\\delta': 'δ',
+    '\\theta': 'θ',
+    '\\lambda': 'λ',
+    '\\mu': 'μ',
+    '\\sigma': 'σ',
+    '\\phi': 'φ',
+    '\\omega': 'ω',
+  };
+  
+  // Apply replacements
+  for (const [latex, unicode] of Object.entries(replacements)) {
+    result = result.split(latex).join(unicode);
+  }
+  
+  // Convert fractions: \frac{a}{b} → a/b
+  result = result.replace(/\\frac\{([^}]+)\}\{([^}]+)\}/g, '$1/$2');
+  
+  // Convert superscripts: ^{2} → ², ^{3} → ³, etc.
+  result = result.replace(/\^\{2\}/g, '²');
+  result = result.replace(/\^\{3\}/g, '³');
+  result = result.replace(/\^\{([^}]+)\}/g, '^($1)');
+  result = result.replace(/\^(\d)/g, (match, digit) => {
+    const superscripts: Record<string, string> = {
+      '0': '⁰', '1': '¹', '2': '²', '3': '³', '4': '⁴',
+      '5': '⁵', '6': '⁶', '7': '⁷', '8': '⁸', '9': '⁹'
+    };
+    return superscripts[digit] || match;
+  });
+  
+  // Convert subscripts: _{2} → ₂, etc.
+  result = result.replace(/_\{([^}]+)\}/g, '_($1)');
+  result = result.replace(/_(\d)/g, (match, digit) => {
+    const subscripts: Record<string, string> = {
+      '0': '₀', '1': '₁', '2': '₂', '3': '₃', '4': '₄',
+      '5': '₅', '6': '₆', '7': '₇', '8': '₈', '9': '₉'
+    };
+    return subscripts[digit] || match;
+  });
+  
+  // Remove remaining backslashes from unknown commands
+  result = result.replace(/\\[a-zA-Z]+/g, '');
+  
+  // Clean up extra braces
+  result = result.replace(/[{}]/g, '');
+  
+  return result.trim();
+}
+
 function formatAnswer(answer: any): string {
   if (!answer) return '(no answer)';
   if (Array.isArray(answer)) return answer.join(', ');
   if (typeof answer === 'object') return Object.values(answer).join(', ');
-  return String(answer);
+  return latexToPlainText(String(answer));
 }
 
 function getCorrectAnswer(question: any): string {
   switch (question.type) {
     case 'multiple-choice-single':
     case 'true-false':
-      return question.options?.find((o: any) => o.isCorrect)?.text || '—';
+      return latexToPlainText(question.options?.find((o: any) => o.isCorrect)?.text || '—');
     case 'multiple-choice-multi':
-      return question.options?.filter((o: any) => o.isCorrect).map((o: any) => o.text).join(', ') || '—';
+      return latexToPlainText(question.options?.filter((o: any) => o.isCorrect).map((o: any) => o.text).join(', ') || '—');
     case 'fill-blank':
     case 'short-answer':
     case 'numeric':
-      return question.correctAnswer || '—';
+      return latexToPlainText(question.correctAnswer || '—');
     case 'matching':
-      return question.matchingPairs?.map((p: any) => `${p.left} → ${p.right}`).join('; ') || '—';
+      return question.matchingPairs?.map((p: any) => `${latexToPlainText(p.left)} → ${latexToPlainText(p.right)}`).join('; ') || '—';
     default:
       return '—';
   }
@@ -180,11 +255,12 @@ export function generatePDFReport(test: Test, attempt: Attempt): void {
     doc.text(`Q${i + 1} (${q.points} pts)`, 20, y);
     y += 4;
 
-    // Question text (truncated)
+    // Question text (truncated and converted from LaTeX)
     doc.setFont('helvetica', 'normal');
     doc.setFontSize(8);
     doc.setTextColor(...TEXT_SECONDARY);
-    const qText = q.text.length > 100 ? q.text.substring(0, 100) + '...' : q.text;
+    const qTextPlain = latexToPlainText(q.text);
+    const qText = qTextPlain.length > 100 ? qTextPlain.substring(0, 100) + '...' : qTextPlain;
     const splitQ = doc.splitTextToSize(qText, 170);
     doc.text(splitQ, 20, y);
     y += splitQ.length * 3.5 + 1;
@@ -212,7 +288,13 @@ export function generatePDFReport(test: Test, attempt: Attempt): void {
     doc.text(`GGDC — Generated ${format(new Date(), 'MMM d, yyyy h:mm a')} — Page ${i} of ${pageCount}`, 14, 290);
   }
 
-  doc.save(`${attempt.takerName.replace(/\s+/g, '_')}_${test.settings.name.replace(/\s+/g, '_')}_report.pdf`);
+  // Create filename with student name and father's name
+  const studentName = attempt.takerName.replace(/\s+/g, '_');
+  const fatherName = attempt.takerFatherName ? `_S_O_${attempt.takerFatherName.replace(/\s+/g, '_')}` : '';
+  const testName = test.settings.name.replace(/\s+/g, '_');
+  const filename = `${studentName}${fatherName}_${testName}_report.pdf`;
+  
+  doc.save(filename);
 }
 
 export function generateBulkPDFReport(test: Test, attempts: Attempt[]): void {

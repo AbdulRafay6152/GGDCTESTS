@@ -30,9 +30,49 @@ const generateId = () => {
   return Date.now().toString(36) + Math.random().toString(36).substr(2, 9);
 };
 
-// Helper to generate test slug
-const generateSlug = () => {
-  return Math.random().toString(36).substring(2, 10);
+// Helper to generate test slug from test name
+const generateSlug = (testName: string = '') => {
+  // Convert test name to URL-friendly slug
+  const slug = testName
+    .toLowerCase()
+    .trim()
+    .replace(/[^\w\s-]/g, '') // Remove special chars
+    .replace(/\s+/g, '-')     // Replace spaces with hyphens
+    .replace(/-+/g, '-')      // Replace multiple hyphens with single
+    .substring(0, 30);        // Limit length
+  
+  // Add short random suffix for uniqueness
+  const suffix = Math.random().toString(36).substring(2, 6);
+  return slug ? `${slug}-${suffix}` : suffix;
+};
+
+// Helper to translate Firebase errors to user-friendly messages
+export const translateFirebaseError = (error: any): string => {
+  const errorCode = error?.code || error?.message || '';
+  
+  const errorMessages: Record<string, string> = {
+    'auth/invalid-credential': 'Invalid email or password. Please try again.',
+    'auth/user-not-found': 'No account found with this email address.',
+    'auth/wrong-password': 'Incorrect password. Please try again.',
+    'auth/email-already-in-use': 'This email is already registered. Please use a different email or login.',
+    'auth/weak-password': 'Password should be at least 6 characters long.',
+    'auth/invalid-email': 'Please enter a valid email address.',
+    'auth/too-many-requests': 'Too many attempts. Please wait a moment and try again.',
+    'auth/network-request-failed': 'Network error. Please check your internet connection.',
+    'auth/user-disabled': 'This account has been disabled. Please contact support.',
+    'auth/popup-closed-by-user': 'Login window was closed. Please try again.',
+    'auth/cancelled-popup-request': 'Login was cancelled. Please try again.',
+  };
+  
+  // Check if error code matches any known pattern
+  for (const [code, message] of Object.entries(errorMessages)) {
+    if (errorCode.includes(code)) {
+      return message;
+    }
+  }
+  
+  // If no match, return generic message
+  return 'An error occurred. Please try again.';
 };
 
 // Current user state
@@ -73,7 +113,7 @@ export async function signup(email: string, name: string, password: string): Pro
     
     return { success: true };
   } catch (error: any) {
-    return { success: false, error: error.message };
+    return { success: false, error: translateFirebaseError(error) };
   }
 }
 
@@ -95,7 +135,7 @@ export async function login(email: string, password: string): Promise<{ success:
     
     return { success: true };
   } catch (error: any) {
-    return { success: false, error: error.message };
+    return { success: false, error: translateFirebaseError(error) };
   }
 }
 
@@ -169,7 +209,7 @@ export async function resetPassword(email: string): Promise<{ success: boolean; 
     await sendPasswordResetEmail(auth, email);
     return { success: true };
   } catch (error: any) {
-    return { success: false, error: error.message };
+    return { success: false, error: translateFirebaseError(error) };
   }
 }
 
@@ -185,7 +225,7 @@ export async function createTest(name: string): Promise<Test> {
   }
   
   const testId = generateId();
-  const slug = generateSlug();
+  const slug = generateSlug(name);
   
   const defaultSettings: TestSettings = {
     name,
