@@ -206,7 +206,7 @@ export default function ResultDetail() {
       </div>
 
       {/* Questions List */}
-      <div className="space-y-3">
+      <div className="space-y-2">
         {test.questions.map((q: Question, idx: number) => {
           const answer = attempt.answers.find(a => a.questionId === q.id);
           const isCorrect = checkCorrectness(q, answer);
@@ -214,11 +214,11 @@ export default function ResultDetail() {
           const essayGrade = answer?.essayGrade ?? essayGrades[q.id];
 
           return (
-            <div key={q.id} className="p-4 rounded" style={{ backgroundColor: 'var(--surface)' }}>
+            <div key={q.id} className="p-3 rounded" style={{ backgroundColor: 'var(--surface)' }}>
               {/* Question Header */}
-              <div className="flex items-start justify-between mb-3 pb-2">
-                <div className="flex items-center gap-3">
-                  <div className="flex items-center justify-center w-8 h-8 rounded font-bold text-sm" 
+              <div className="flex items-start justify-between mb-2 pb-1.5">
+                <div className="flex items-center gap-2">
+                  <div className="flex items-center justify-center w-7 h-7 rounded font-bold text-xs" 
                     style={{ 
                       backgroundColor: isCorrect === true ? 'var(--success)' + '15' : isCorrect === false ? 'var(--error)' + '15' : 'var(--bg-secondary)',
                       color: isCorrect === true ? 'var(--success)' : isCorrect === false ? 'var(--error)' : 'var(--text-muted)'
@@ -258,16 +258,16 @@ export default function ResultDetail() {
               </div>
 
               {/* Question Text */}
-              <div className="mb-3">
+              <div className="mb-2">
                 <p className="text-sm leading-relaxed" style={{ color: 'var(--text)' }}>{q.text}</p>
               </div>
 
               {/* Student Answer */}
-              <div className="mb-3">
-                <label className="text-xs font-semibold block mb-1.5" style={{ color: 'var(--text-muted)' }}>
+              <div className="mb-2">
+                <label className="text-xs font-semibold block mb-1" style={{ color: 'var(--text-muted)' }}>
                   Student's Answer
                 </label>
-                <div className="px-3 py-2 rounded" style={{ 
+                <div className="px-2.5 py-1.5 rounded" style={{ 
                   backgroundColor: 'var(--bg-secondary)'
                 }}>
                   {isEssay ? (
@@ -284,8 +284,8 @@ export default function ResultDetail() {
 
               {/* Essay Grading Input */}
               {isEssay && (
-                <div className="mb-3 p-3 rounded" style={{ backgroundColor: 'var(--bg-secondary)' }}>
-                  <label className="text-xs font-semibold block mb-1.5" style={{ color: 'var(--text)' }}>
+                <div className="mb-2 p-2.5 rounded" style={{ backgroundColor: 'var(--bg-secondary)' }}>
+                  <label className="text-xs font-semibold block mb-1" style={{ color: 'var(--text)' }}>
                     Assign Points (0-{q.points}):
                   </label>
                   <input
@@ -306,12 +306,12 @@ export default function ResultDetail() {
 
               {/* Correct Answer & Explanation */}
               {!isEssay && test.settings.showCorrectAnswers && (
-                <div className="space-y-2">
+                <div className="space-y-1.5">
                   <div>
-                    <label className="text-xs font-semibold block mb-1.5" style={{ color: 'var(--text-muted)' }}>
+                    <label className="text-xs font-semibold block mb-1" style={{ color: 'var(--text-muted)' }}>
                       Correct Answer
                     </label>
-                    <div className="px-3 py-2 rounded" style={{ backgroundColor: 'var(--success)' + '08' }}>
+                    <div className="px-2.5 py-1.5 rounded" style={{ backgroundColor: 'var(--success)' + '08' }}>
                       <span className="text-xs font-medium" style={{ color: 'var(--success)' }}>
                         {getCorrectAnswer(q)}
                       </span>
@@ -320,10 +320,10 @@ export default function ResultDetail() {
                   
                   {q.explanation && (
                     <div>
-                      <label className="text-xs font-semibold block mb-1.5" style={{ color: 'var(--text-muted)' }}>
+                      <label className="text-xs font-semibold block mb-1" style={{ color: 'var(--text-muted)' }}>
                         Explanation
                       </label>
-                      <div className="px-3 py-2 rounded" style={{ backgroundColor: 'var(--bg-secondary)' }}>
+                      <div className="px-2.5 py-1.5 rounded" style={{ backgroundColor: 'var(--bg-secondary)' }}>
                         <p className="text-xs leading-relaxed" style={{ color: 'var(--text-secondary)' }}>
                           {q.explanation}
                         </p>
